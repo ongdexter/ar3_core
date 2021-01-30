@@ -1,0 +1,18 @@
+<package format="3">
+  <name>ar3_hardware_drivers</name>
+  <version>0.0.0</version>
+  <description>The ar3_hardware_drivers package</description>
+
+  <maintainer email="dexterong94@gmail.com">Dexter Ong</maintainer>
+
+  <license>MIT</license>
+
+  <author email="dexterong94@gmail.com">Dexter Ong</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  
+</package>
