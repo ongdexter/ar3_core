@@ -63,9 +63,9 @@ const int J4calPin = 29;
 const int J5calPin = 30;
 const int J6calPin = 31;
 const int CAL_PINS[] = { J1calPin, J2calPin, J3calPin, J4calPin, J5calPin, J6calPin };
+const int LIMIT_SWITCH_HIGH[] = { 1, 1, 1, 1, 1, 1 }; // to account for both NC and NO limit switches
 const int CAL_DIR[] = { -1, -1, 1, -1, -1, 1 }; // joint rotation direction to limit switch
-const int CAL_SPEED_FAST = 600; // motor steps per second
-const int CAL_SPEED_SLOW = 50; // motor steps per second
+const int CAL_SPEED = 600; // motor steps per second
 // DEFAULT { 1, 1, 1, 2, 1, 1 }
 // J2 joint enc { 1, 10, 1, 2, 1, 1 }
 const int CAL_SPEED_MULT[] = { 1, 1, 1, 2, 1, 1 }; // multiplier to account for transmission ratios
@@ -218,7 +218,7 @@ void calibrateJoints(int* calJoints)
   // first pass of calibration, fast speed
   for (int i = 0; i < NUM_JOINTS; i++)
   {
-    stepperJoints[i].setSpeed(CAL_SPEED_FAST * CAL_SPEED_MULT[i] * CAL_DIR[i]);
+    stepperJoints[i].setSpeed(CAL_SPEED * CAL_SPEED_MULT[i] * CAL_DIR[i]);
   }
   while (!calAllDone)
   {
@@ -229,7 +229,7 @@ void calibrateJoints(int* calJoints)
       if (!calJointsDone[i])
       {
         // check limit switches
-        if (!reachedLimitSwitch(CAL_PINS[i]))
+        if (!reachedLimitSwitch(i))
         {
           // limit switch not reached, continue moving
           stepperJoints[i].runSpeed();
@@ -246,53 +246,27 @@ void calibrateJoints(int* calJoints)
   }
   delay(2000);
 
-  // second pass of calibration, slow speed
-  calAllDone = false;
-  for (int i = 0; i < NUM_JOINTS; i++)
-  {
-    calJointsDone[i] = !calJoints[i];
-    stepperJoints[i].setSpeed(CAL_SPEED_SLOW  * CAL_SPEED_MULT[i] * -CAL_DIR[i]);
-  }
-  while (!calAllDone)
-  {
-    calAllDone = true;
-    for (int i = 0; i < NUM_JOINTS; ++i)
-    {
-      // if joint is not off limit switch yet
-      if (!calJointsDone[i])
-      {
-        // check limit switches
-        if (reachedLimitSwitch(CAL_PINS[i]))
-        {
-          // limit switch not released, continue moving
-          stepperJoints[i].runSpeed();
-          calAllDone = false;
-        }
-        else
-        {
-          // limit switch released
-          stepperJoints[i].setSpeed(0); // redundancy
-          calJointsDone[i] = true;
-        }   
-      }   
-    } 
-  }
-  delay(2000);
-
   return;
 }
 
-bool reachedLimitSwitch(int pin)
+bool reachedLimitSwitch(int joint)
 {
+  int pin = CAL_PINS[joint];
   // check multiple times to deal with noise
   // possibly EMI from motor cables?
-  if (digitalRead(pin) == HIGH)
+  if (digitalRead(pin) == LIMIT_SWITCH_HIGH[joint])
   {
-    if (digitalRead(pin) == HIGH)
+    if (digitalRead(pin) == LIMIT_SWITCH_HIGH[joint])
     {
-      if (digitalRead(pin) == HIGH)
+      if (digitalRead(pin) == LIMIT_SWITCH_HIGH[joint])
       {
-        return true;
+        if (digitalRead(pin) == LIMIT_SWITCH_HIGH[joint])
+        {
+          if (digitalRead(pin) == LIMIT_SWITCH_HIGH[joint])
+          {
+            return true;
+          }
+        }
       }
     }
   }
