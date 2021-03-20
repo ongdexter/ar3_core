@@ -18,14 +18,14 @@ void TeensyDriver::init(std::string port, int baudrate, int num_joints, std::vec
 
     if (ec)
     {
-        ROS_WARN("Failed to connect to serial port %s", port);
+        ROS_WARN("Failed to connect to serial port %s", port.c_str());
         return;
     }
     else
     {
         serial_port_.set_option(boost::asio::serial_port_base::baud_rate(static_cast<uint32_t>(baudrate)));
         serial_port_.set_option(boost::asio::serial_port_base::parity(boost::asio::serial_port_base::parity::none));
-        ROS_INFO("Successfully connected to serial port %s", port);
+        ROS_INFO("Successfully connected to serial port %s", port.c_str());
     }
     
     initialised_ = false;
@@ -36,7 +36,7 @@ void TeensyDriver::init(std::string port, int baudrate, int num_joints, std::vec
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         exchange(msg);
     }
-    ROS_INFO("Successfully initialised driver on port %s", port);
+    ROS_INFO("Successfully initialised driver on port %s", port.c_str());
 
     // initialise joint and encoder calibration
     num_joints_ = num_joints;
