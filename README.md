@@ -111,6 +111,11 @@ You may also wish to check out some hardware modifications that I've made for jo
   ```
   echo "source ~/ar3_ws/devel/setup.bash" >> ~/.bashrc
   ```
+* Enable serial port access if you haven't already done so:
+  ```
+  sudo addgroup $USER dialout
+  ```
+  You will need to log out and back in for changes to take effect.
 
 ## Setup
 * **Hardware interface**  
