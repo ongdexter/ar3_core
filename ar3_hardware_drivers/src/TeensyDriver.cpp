@@ -33,6 +33,7 @@ void TeensyDriver::init(std::string port, int baudrate, int num_joints, std::vec
 
     while (!initialised_)
     {
+        ROS_INFO("Waiting for response from Teensy on port %s", port.c_str());
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         exchange(msg);
     }
